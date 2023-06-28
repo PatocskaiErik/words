@@ -5,7 +5,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.StringJoiner;
 
-
 public class StringUtil {
     public static int countEqualIgnoreCaseAndSpaces(String[] words, String sample) {
         if(sample == null || words == null) {
@@ -54,7 +53,6 @@ public class StringUtil {
             return null;
         }
 
-
         String pattern = "((.+/.+\\\\.+)|" +
                 "(.+\\\\.+/.+)|(.+~.+)|(C:/.+)|" +
                 "(~\\\\.+)|(~/~)|(~{2,})|(.+C:\\\\)|" +
@@ -66,7 +64,6 @@ public class StringUtil {
         if(m.matches()) {
             return null;
         }
-
 
         if((checkWinPath(path) && toWin) || (checkUnixPath(path) && !toWin)) {
             return path;

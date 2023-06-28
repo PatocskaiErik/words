@@ -1,22 +1,133 @@
 package com.epam.rd.autotasks.words;
 
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.StringJoiner;
+
 
 public class StringUtil {
     public static int countEqualIgnoreCaseAndSpaces(String[] words, String sample) {
-        throw new UnsupportedOperationException();
+        if(sample == null || words == null) {
+            return 0;
+        }
+        sample = sample.stripLeading();
+        sample = sample.stripTrailing();
+
+        if(sample.length() == 0 || words.length == 0) {
+            return 0;
+        }
+
+        int count = 0;
+        for(String word : words) {
+            word = word.stripLeading();
+            word = word.stripTrailing();
+                if(word.equalsIgnoreCase(sample)) {
+                    count++;
+                }
+        }
+        return count;
     }
 
     public static String[] splitWords(String text) {
-        throw new UnsupportedOperationException();
+
+        if(text == null) {
+            return null;
+        }
+
+        if(text.isEmpty() || text.matches("^[ ,.;:!?]+$")) {
+            return null;
+        }
+
+        text = text.replaceAll("\\p{Punct}+", " ").trim();
+        Pattern p1 = Pattern.compile("[, .;:!?]+");
+        String[] str = p1.split(text);
+
+        if(str[0].isEmpty()) {
+            return null;
+        }
+        return str;
     }
 
     public static String convertPath(String path, boolean toWin) {
-        throw new UnsupportedOperationException();
+        if(path == null || path.isEmpty()) {
+            return null;
+        }
+
+
+        String pattern = "((.+/.+\\\\.+)|" +
+                "(.+\\\\.+/.+)|(.+~.+)|(C:/.+)|" +
+                "(~\\\\.+)|(~/~)|(~{2,})|(.+C:\\\\)|" +
+                "(C:\\\\.+C:\\\\))";
+
+        Pattern p = Pattern.compile(pattern);
+        Matcher m = p.matcher(path);
+
+        if(m.matches()) {
+            return null;
+        }
+
+
+        if((checkWinPath(path) && toWin) || (checkUnixPath(path) && !toWin)) {
+            return path;
+        }
+
+        String resultPath;
+
+        if(toWin) {
+            resultPath = convertToWin(path);
+        } else {
+            resultPath = convertToUnix(path);
+        }
+        return resultPath;
+    }
+
+    private static boolean checkWinPath(String path) {
+        return path.matches("(C:\\\\)?([\\w\\.\\-\\s\\\\]*)");
+    }
+
+    private static boolean checkUnixPath(String path) {
+        return path.matches("(/|~)?([\\w\\.\\-\\s/]*)");
+    }
+
+    private static String convertToWin(String path) {
+        String result = path;
+
+        if (path.startsWith("~")) {
+            path = path.replace("~", "C:\\User");
+        } else if (path.startsWith("/")) {
+            path = path.replaceFirst("/", "C:\\\\");
+        }
+        return path.replace("/", "\\");
+    }
+
+    private static String convertToUnix(String path) {
+        String result = path;
+
+        if(path.startsWith("C:\\User")) {
+            path = path.replace("C:\\User", "~");
+        } else if(path.startsWith("C:\\")) {
+            path = path.replace("C:\\", "/");
+        }
+        return path.replace("\\", "/");
     }
 
     public static String joinWords(String[] words) {
-        throw new UnsupportedOperationException();
+        if (words == null || words.length == 0) {
+            return null;
+        }
+
+        StringJoiner joiner = new StringJoiner(", ", "[", "]");
+
+        for(String i : words) {
+            if(!i.isEmpty()) {
+                joiner.add(i);
+            }
+        }
+        if(joiner.length() == 2) {
+            return null;
+        }
+        return joiner.toString();
     }
 
     public static void main(String[] args) {
